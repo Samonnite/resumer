@@ -19,9 +19,12 @@ import Topbar from './components/Topbar'
 import ResumeEditor from './components/ResumeEditor'
 import ResumePreview from './components/ResumePreview'
 import icons from './assets/icons'
+import store from './store/index'
+
 
 export default {
   name: 'app',
+  store,
    data: function(){
      return {		    
      }		     
@@ -43,7 +46,7 @@ export default {
   background: #eaebec;
 }
 #page>main{
-  flex: 1;
+  flex-grow: 1;
   min-width: 1024px;
   max-width: 1440px;
   margin-top: 16px;
@@ -54,11 +57,11 @@ export default {
   width: 100%;
   align-self: center;
 }
-#ResumeEditor{
-  width:35%;  
+#resumeEditor{
+  min-width:35%;  
   background: #444;
 }
-#ResumePreview{
+#resumePreview{
   flex: 1;
   margin-left: 16px;
   background: #777;
