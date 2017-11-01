@@ -1,5 +1,6 @@
 <template>
-  <div id="page">
+<div>
+  <div class="page">
     <header>
       <Topbar/>
     </header>
@@ -7,7 +8,7 @@
     <ResumeEditor/>
     <ResumePreview/>
     </main>
-    
+  </div> 
   </div>
 </template>
 
@@ -20,32 +21,35 @@ import ResumeEditor from './components/ResumeEditor'
 import ResumePreview from './components/ResumePreview'
 import icons from './assets/icons'
 import store from './store/index'
-
+import AV from './lib/leancloud'
+import getAVUser from './lib/getAVUser'
 
 export default {
   name: 'app',
-  store,
-   data: function(){
-     return {		    
-     }		     
-   },		   
+  store,	   
   components: {
     Topbar, ResumeEditor, ResumePreview
   },
   created() {
     document.body.insertAdjacentHTML('afterbegin',icons)
+    let state = localStorage.getItem('state')
+    if(state) {
+      state = JSON.parse(state)
+    }
+    this.$store.commit('initState',{})
+    this.$store.commit('setUser',getAVUser())
   }
 }
 </script>
 
 <style>
-#page{
+.page{
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: #eaebec;
 }
-#page>main{
+.page>main{
   flex-grow: 1;
   min-width: 1024px;
   max-width: 1440px;
@@ -57,11 +61,11 @@ export default {
   width: 100%;
   align-self: center;
 }
-#resumeEditor{
+.resumeEditor{
   min-width:35%;  
   background: #444;
 }
-#resumePreview{
+.resumePreview{
   flex: 1;
   margin-left: 16px;
   background: #777;
