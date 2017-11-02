@@ -12,16 +12,19 @@
     <ol class="panels">
       <li v-for="item in resumeConfig" v-show="item.field === selected">
         <div v-if="item.type === 'array'">
+          <h2>{{$t(`resume.${item.field}._`)}}</h2>
           <div class="subitem" v-for="(subitem, i) in resume[item.field]">
+            <el-button class="" type="danger" size="mini" @click="removeResumeSubfield(item.field, i)">删除</el-button>
             <div class="resumeField" v-for="(value,key) in subitem">
-              <label> {{key}} </label>
+              <label> {{$t(`resume.${item.field}.${key}`)}}</label>
               <input type="text" :value="value" @input="changeResumeField(`${item.field}.${i}.${key}`, $event.target.value)">
             </div>
             <hr>
           </div>
+          <el-button class="button" type="primary" size="medium" @click.native="addResumeSubfield(item.field)">增加</el-button>
         </div>
         <div v-else class="resumeField" v-for="(value,key) in resume[item.field]">
-          <label> {{key}} </label>
+          <label> {{$t(`resume.profile.${key}`)}} </label>
           <input type="text" :value="value" @input="changeResumeField(`${item.field}.${key}`, $event.target.value)">
         </div>
       </li>
@@ -54,6 +57,12 @@
           path,
           value
         })
+      },
+      addResumeSubfield(field){
+        this.$store.commit('addResumeSubfield', {field})
+      },
+      removeResumeSubfield(field, index){
+        this.$store.commit('removeResumeSubfield', {field, index})
       }
     }
   }
@@ -89,10 +98,13 @@
       flex-grow: 1;
       > li {
         padding: 24px;
+        h2{
+          margin-bottom: 24px;
+        }
       }
     }
     svg.icon{
-      width: 24px; // 原设计稿 32px 不好看，改成 24px
+      width: 24px; 
       height: 24px;
     }
   }
@@ -116,5 +128,13 @@
     border: none;
     border-top: 1px solid #ddd;
     margin: 24px 0;
+  }
+  .subitem{
+    position: relative;
+    .button.remove{
+      position: absolute;
+      right: 0;
+      top: -3px;
+    }
   }
 </style>

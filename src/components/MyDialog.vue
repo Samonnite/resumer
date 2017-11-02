@@ -2,7 +2,7 @@
     <div class="dialogWrapper" v-show="visible">
     <div class="dialog">
       <header>{{title}}
-        <span class="close" @click="close">X</span>
+        <span class="close" @click="close"><i class="el-icon-circle-close-outline"></i></span>
       </header>
       <main>
         <slot></slot>
@@ -44,6 +44,7 @@ export default {
       padding: 16px;
       display: flex;
       justify-content: space-between;
+      >span{padding:5px;}
     }
     > main{
       padding: 16px;
