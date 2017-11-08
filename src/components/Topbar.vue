@@ -18,7 +18,8 @@
           <SignInForm @success="signIn($event)"/>
           </MyDialog>
         </div>
-      </div>
+         <router-link to="/preview"><el-button @click="preview">预览</el-button></router-link>
+      </div>     
     </div>
   </div>
 </template>
@@ -28,6 +29,8 @@ import MyDialog from './MyDialog'
 import SignUpForm from './SignUpForm'
 import SignInForm from './SignInForm'
 import AV from '../lib/leancloud'
+import {mapActions} from 'vuex'
+import store from '../store/index'
 export default {
     name: 'Topbar',
     data() {
@@ -53,10 +56,15 @@ export default {
             this.$store.commit('removeUser')
         },
         signIn(user) {
-            this.signUpDialogVisible = false;
+            this.signUpDialogVisible = false
             this.signInDialogVisible = false
             this.$store.commit('setUser', user)
+        },
+        ...mapActions(['saveResume']),
+        preview() {
+          this.$router.replace('/preview')
         }
+
     }
 }
 </script>
@@ -82,12 +90,12 @@ export default {
       color:#000000;
     }
   }
-  .button{ // 由于加了 scoped， 所以这个 button 选择器只在本组件内有效，不会影响其他组件
+  .button{ 
     width:72px;
     height:32px;
     border: none;
     cursor: pointer;
-    font-size: 18px; // 设计稿上是 20px，看起来太大，就改成 18px 了
+    font-size: 18px; 
     background:#ddd;
     color: #222;
     text-decoration: none;

@@ -1,15 +1,21 @@
-// import Vue from 'vue'
-// import Router from 'vue-router'
-// //import HelloWorld from '@/components/HelloWorld'
+import Vue from 'vue'
+import Router from 'vue-router'
+import Resume from '@/components/Resume'
+import Preview from '@/components/Preview'
 
-// Vue.use(Router)
+Vue.use(Router)
 
-// export default new Router({
-//   routes: [
-//     {
-//       // path: '/',
-//       // name: 'Hello',
-//       // component: HelloWorld
-//     }
-//   ]
-// })
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'Resume',
+      component: Resume
+    },
+    {
+      path: '/preview',
+      name: 'Preview',
+      component: Preview
+    }
+  ]
+})

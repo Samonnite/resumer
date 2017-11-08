@@ -1,11 +1,10 @@
 import Vuex from 'vuex'
-import Vue from 'vue' // 思考：在多个文件 import vue ，会怎样
-import objectPath from "object-path"
+import Vue from 'vue'
 import AV from '../lib/leancloud'
+import objectPath from 'object-path'
 import getAVUser from '../lib/getAVUser'
 
-
-Vue.use(Vuex) // 不写这句话浏览器控制台就会报错，于是我就写了
+Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
@@ -20,71 +19,76 @@ export default new Vuex.Store({
       { field: 'education', icon: 'book', type: 'array', keys: ['school', 'details'] },
       { field: 'projects', icon: 'heart', type: 'array', keys: ['name', 'details'] },
       { field: 'awards', icon: 'cup', type: 'array', keys: ['name', 'details'] },
-      { field: 'contacts', icon: 'phone', type: 'array', keys: ['contact', 'content'] },
+      { field: 'contacts', icon: 'phone', type: 'array', keys: ['contact', 'content'] }
     ],
     resume: {
       id: ''
     }
   },
   mutations: {
-    initState(state, payload) {
+    // 初始化resume结构
+    initState (state, payload) {
       state.resumeConfig.map((item) => {
         if (item.type === 'array') {
-          //state.resume[item.field] = [] // 这样写 Vue 无法监听属性变化
           Vue.set(state.resume, item.field, [])
         } else {
-          //state.resume[item.field] = {} // 这样写 Vue 无法监听属性变化
           Vue.set(state.resume, item.field, {})
           item.keys.map((key) => {
-            //state.resume[item.field][key] = '' // 这样写 Vue 无法监听属性变化
             Vue.set(state.resume[item.field], key, '')
           })
         }
       })
-      if(payload){
+      if (payload) {
         Object.assign(state, payload)
       }
     },
-    switchTab(state, payload) {
-      state.selected = payload 
+    // tab切换
+    switchTab (state, payload) {
+      state.selected = payload
     },
-    updateResume(state, { path, value }) {
+    // 更新resume展示，并将其保存在localStorage中
+    updateResume (state, { path, value }) {
       objectPath.set(state.resume, path, value)
       localStorage.setItem('resume', JSON.stringify(state.resume))
     },
-    setUser(state, payload) {
+    // 设置id与用户{id:...,username:...}
+    setUser (state, payload) {
       Object.assign(state.user, payload)
     },
-    removeUser(state) {
+    // 移除用户id
+    removeUser (state) {
       state.user.id = ''
     },
-    addResumeSubfield(state, { field }) {
+    addResumeSubfield (state, { field }) {
       let empty = {}
       state.resume[field].push(empty)
+      // 过滤出与传入参数field相对应的项，由于过滤出获得的数组所以加上索引
       state.resumeConfig.filter((i) => i.field === field)[0].keys.map((key) => {
         Vue.set(empty, key, '')
       })
     },
-    removeResumeSubfield(state, { field, index }) {
+    removeResumeSubfield (state, { field, index }) {
       state.resume[field].splice(index, 1)
     },
-    setResumeId(state, { id }) {
-      state.resume.id = id
-    },
-    setResume(state, resume){
-      state.resumeConfig.map(({field})=>{
+    // 设置resume的数据
+    setResume (state, resume) {
+      state.resumeConfig.map(({field}) => {
         Vue.set(state.resume, field, resume[field])
-      }) 
+      })
       state.resume.id = resume.id
+    },
+    setResumeId (state, { id }) {
+      state.resume.id = id
     }
   },
   actions: {
-    saveResume({ state, commit }, payload) {
-      // 新建一个帖子对象
+    saveResume ({ state, commit }, payload) {
+      // 新建一个Resume的类
       var Resume = AV.Object.extend('Resume')
       var resume = new Resume()
+      // 如果这个id存在
       if (state.resume.id) {
-        resume.id = state.resume.id  
+        resume.id = state.resume.id
       }
       resume.set('profile', state.resume.profile)
       resume.set('workHistory', state.resume.workHistory)
@@ -100,19 +104,18 @@ export default new Vuex.Store({
 
       resume.setACL(acl)
       resume.save().then(function (response) {
-        if(!state.resume.id){
+        if (!state.resume.id) {
           commit('setResumeId', { id: response.id })
         }
       }).catch(function (error) {
         console.log(error)
       })
-
     },
-    fetchResume({commit},payload){
-      var query = new AV.Query('Resume');
+    fetchResume ({commit}, payload) {
+      var query = new AV.Query('Resume')
       query.equalTo('owner_id', getAVUser().id)
-      query.first().then((resume)=>{
-        if(resume){
+      query.first().then((resume) => {
+        if (resume) {
           commit('setResume', {id: resume.id, ...resume.attributes})
         }
       })

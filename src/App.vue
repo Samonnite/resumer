@@ -1,80 +1,54 @@
 <template>
-<div>
-  <div class="page">
-    <header>
-      <Topbar/>
-    </header>
-    <main>
-    <ResumeEditor/>
-    <ResumePreview/>
-    </main>
-  </div> 
+  <div>
+   <router-view></router-view>
   </div>
+ 
 </template>
 
 <script>
 import './assets/reset.css'
 import 'normalize.css/normalize.css' 
-
-import Topbar from './components/Topbar'
-import ResumeEditor from './components/ResumeEditor'
-import ResumePreview from './components/ResumePreview'
+import './assets/ui.scss'
 import icons from './assets/icons'
+
 import store from './store/index'
 import AV from './lib/leancloud'
 import getAVUser from './lib/getAVUser'
 
+document.body.insertAdjacentHTML('afterbegin',icons)
+
 export default {
   name: 'app',
   store,	   
-  components: {
-    Topbar, ResumeEditor, ResumePreview
-  },
   created() {
-    document.body.insertAdjacentHTML('afterbegin',icons)
-    let state = localStorage.getItem('state')
-    if(state) {
-      state = JSON.parse(state)
+   //初始化resume的数据结构
+   this.$store.commit('initState')
+   //获取id与用户名{id:'',usernmae:''}
+   let user = getAVUser()
+   //将state.user设为当前user
+   this.$store.commit('setUser',user)
+   //如果user.id存在，即用户登录，从leancloud抓取数据
+   if(user.id) {
+     this.$store.dispatch('fetchResume').then(() => {
+       //新用户注册未保存是先存在localstorge中
+       this.restoreResumeFromLocalStorage()
+     })
+   } else {
+     this.restoreResumeFromLocalStorage()
+   }
+  },
+  methods: {
+    restoreResumeFromLocalStorage() {
+      //从localStorage获取resume
+      let resume = localStorage.getItem('resume')
+      if(resume) {
+        this.$store.commit('setResume',JSON.parse(resume))
+      }
     }
-    this.$store.commit('initState',{})
-    this.$store.commit('setUser',getAVUser())
   }
 }
 </script>
 
-<style>
-.page{
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #eaebec;
-}
-.page>main{
-  flex-grow: 1;
-  min-width: 1024px;
-  max-width: 1440px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 16px;
-  width: 100%;
-  align-self: center;
-}
-.resumeEditor{
-  min-width:35%;  
-  background: #444;
-}
-.resumePreview{
-  flex: 1;
-  margin-left: 16px;
-  background: #777;
-}
-svg.icon{
-  height: 1em;
-  width: 1em;
-  fill: currentColor;
-  vertical-align: -0.1em;
-  font-size: 16px;
-}
+<style lang="scss" scoped>
+
 </style>

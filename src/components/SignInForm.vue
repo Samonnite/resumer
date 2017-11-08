@@ -11,7 +11,7 @@
             </div>
             <div class="actions">
                 <span class="errorMessage">{{errorMessage}}</span>
-                <input type="submit" value="提交">
+                <input type="submit" value="登录">
             </div>
         </form>
     </div>
@@ -33,10 +33,13 @@ export default {
         }
     },
     methods: {
+        //登录
         signIn() {
+            //解构赋值
             let {username, password} = this.formData
             AV.User.logIn(username,password).then(() => {
-                this.$emit('success', getAvUser())
+                //登录成功后获取leancloud的数据
+                this.$emit('setUser', getAvUser())
             },(error) => {
                 this.errorMessage = getErrorMessage(error)
             })

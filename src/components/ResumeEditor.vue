@@ -12,11 +12,11 @@
     <ol class="panels">
       <li v-for="item in resumeConfig" v-show="item.field === selected">
         <div v-if="item.type === 'array'">
-          <h2>{{$t(`resume.${item.field}._`)}}</h2>
+         
           <div class="subitem" v-for="(subitem, i) in resume[item.field]">
             <el-button class="" type="danger" size="mini" @click="removeResumeSubfield(item.field, i)">删除</el-button>
             <div class="resumeField" v-for="(value,key) in subitem">
-              <label> {{$t(`resume.${item.field}.${key}`)}}</label>
+              <label> {{`${key}`}}</label>
               <input type="text" :value="value" @input="changeResumeField(`${item.field}.${i}.${key}`, $event.target.value)">
             </div>
             <hr>
@@ -24,7 +24,7 @@
           <el-button class="button" type="primary" size="medium" @click.native="addResumeSubfield(item.field)">增加</el-button>
         </div>
         <div v-else class="resumeField" v-for="(value,key) in resume[item.field]">
-          <label> {{$t(`resume.profile.${key}`)}} </label>
+          <label> {{key}} </label>
           <input type="text" :value="value" @input="changeResumeField(`${item.field}.${key}`, $event.target.value)">
         </div>
       </li>
@@ -33,9 +33,13 @@
 </template>
 
 <script>
+
+import { mapState, mapMutations } from 'vuex'
+
   export default {
     name: 'ResumeEditor',
     computed: {
+      ...mapState(["resume", "resumeConfig"]),
       selected:{
         get(){
           return this.$store.state.selected
@@ -53,10 +57,7 @@
     },
     methods: {
       changeResumeField(path, value){
-        this.$store.commit('updateResume',{
-          path,
-          value
-        })
+        this.$store.commit('updateResume',{ path,value })
       },
       addResumeSubfield(field){
         this.$store.commit('addResumeSubfield', {field})
@@ -69,7 +70,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .resumeEditor{
+.resumeEditor{
     background:#ffffff;
     box-shadow:0 1px 3px 0 rgba(0,0,0,0.25);
     display: flex;
